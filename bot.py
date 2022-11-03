@@ -35,7 +35,7 @@ def get_text(path_to_image):
 
     # Extract text from image
     text = image_to_string(img,
-                           config='--psm 6 --oem 3')
+                           config='-c tessedit_char_whitelist=!01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@" ", --psm 6 --oem 3')
     # Remove end of line characters
     text = text.replace('\n', ' ')
 
@@ -71,11 +71,11 @@ def determine_bet(list_of_bets_red, list_of_bets_blue):
     ratio = sum_bets(list_of_bets_red) / sum_bets(list_of_bets_blue)
     team = ""
     if ratio > 1.5:
-        team = "red"
+        return "red " + str(ratio)
     elif ratio < 0.5:
-        team = "blue"
+        return "blue " + str(ratio)
     else:
-        team = "hold"
+        return "hold " + str(ratio)
 # MAIN
 # ----------------------------------------
 
@@ -84,7 +84,7 @@ while True:
     ss_region = (2000, 450, 2550, 850)
     ss_img = ImageGrab.grab(ss_region)
     ss_img.save("chat.png")
-    time.sleep(1)
+    time.sleep(0.2)
     text = get_text("chat.png")
     get_bets(text)
     print(list_of_bets_blue)
@@ -93,3 +93,8 @@ while True:
     print("Sum of red bets: ", sum_bets(list_of_bets_red))
     with open("output.txt", "w") as f:
         f.write(get_text("chat.png"))
+    if text.find("The match starts in 5 seconds") != -1:
+        break
+
+# Determine bet
+print(determine_bet(list_of_bets_red, list_of_bets_blue))
