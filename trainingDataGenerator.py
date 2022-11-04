@@ -4,46 +4,51 @@ import time
 from pynput import keyboard, mouse
 from pynput.mouse import Button, Controller
 from PIL import Image, ImageGrab
+
+TRAIN_ON_ITALICS = True
 # letters and numbers and characters of my choosing
-letters = string.ascii_letters + string.digits + '!' + '@' + ':' + ','
-sentence = ''
+letters = f'{string.ascii_letters}{string.digits}!@:,'
+buffer = 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopq'
 mouse = mouse.Controller()
 # twitch chat box
 mouse.position = (1200, 700)
 time.sleep(0.2)
 mouse.click(Button.left)
 keyboard = keyboard.Controller()
-for i in range(0, 100):
+for i in range(0, 1):
+    sentence = ''
+    # Resets random seed every iteration
     keyboard.press('/')
     # random sleep times due to paranoia
-    time.sleep(random.randint(1, 2)/48)
-    keyboard.press('m')
-    time.sleep(random.randint(1, 2)/48)
-    keyboard.press('e')
-    time.sleep(random.randint(1, 2)/48)
-    keyboard.press(' ')
-    for i in range(random.randint(1, 7)):
-        for i in range(random.randint(1, 15)):
+    if (TRAIN_ON_ITALICS):
+        time.sleep(random.randint(1000, 3000)/48000)
+        keyboard.press('m')
+        time.sleep(random.randint(1000, 3000)/48000)
+        keyboard.press('e')
+        time.sleep(random.randint(1000, 3000)/48000)
+        keyboard.press(' ')
+
+    for i in range(random.randint(1, 4)):
+        random.seed(round(time.time()*1000))
+        for j in range(random.randint(1, 12)):
+            time.sleep(0.01)
             sentence += random.choice(letters)
         sentence += ' '
+    for i in buffer:
+        keyboard.press(i)
+        time.sleep(random.randint(1000, 2000)/48000)
+        keyboard.release(i)
     for i in sentence:
         keyboard.press(i)
-        time.sleep(random.randint(1, 2)/48)
+        time.sleep(random.randint(1000, 2000)/48000)
         keyboard.release(i)
     keyboard.press(keyboard._Key.enter)
+    time.sleep(random.randint(100, 200)/100)
+    ss_region = (2000, 1150, 2550, 1180)
+    ss_img = ImageGrab.grab(ss_region)
+    imgIdentifier = str(round(time.time()*1000))
+    ss_img.save("GeneratedTestData/data_" + imgIdentifier + ".png")
+    f = open("GeneratedTestData/data_" + imgIdentifier + ".txt", "w")
+    f.write(sentence)
 
-    ss_region1 = (2000, 770, 2550, 800)
-    ss_region2 = (2000, 800, 2550, 830)
-    ss_region3 = (2000, 830, 2550, 860)
-    ss_region4 = (2000, 860, 2550, 890)
-    ss_img1 = ImageGrab.grab(ss_region1)
-    ss_img2 = ImageGrab.grab(ss_region2)
-    ss_img3 = ImageGrab.grab(ss_region3)
-    ss_img4 = ImageGrab.grab(ss_region4)
-    ss_img1.save("GeneratedTestData/data" + str(i) + ".1" + ".png")
-    ss_img2.save("GeneratedTestData/data" + str(i) + ".2" + ".png")
-    ss_img3.save("GeneratedTestData/data" + str(i) + ".3" + ".png")
-    ss_img4.save("GeneratedTestData/data" + str(i) + ".4" + ".png")
-    time.sleep(random.randint(1, 2))
-
-# Grab Image
+    time.sleep(random.randint(100, 200)/100)
