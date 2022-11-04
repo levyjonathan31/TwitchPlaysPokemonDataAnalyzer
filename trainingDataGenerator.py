@@ -47,7 +47,7 @@ for i in range(0, NUMBER_OF_ITERATIONS):
     ss_img = ImageGrab.grab(ss_region)
     imgIdentifier = str(round(time.time()*1000))
     ss_img.save("GeneratedTestData/data_" + imgIdentifier + ".png")
-    f = open("GeneratedTestData/data_" + imgIdentifier + ".txt", "w")
+    f = open("GeneratedTestData/data_" + imgIdentifier + ".gt.txt", "w")
     f.write(sentence)
 
     time.sleep(random.randint(100, 200)/100)
