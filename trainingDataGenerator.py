@@ -16,11 +16,9 @@ SPEED = 0.6
 
 # Variables
 # ----------------------------------------
-letters = f'{string.ascii_letters}{string.digits}!@:,'
+letters = f'{string.ascii_letters}{string.digits}!@:,_'
 buffer = 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopq'
-word_bank = ['placed a P' +
-             str(random.randint(0, 20000)) + ' ', 'bet on ', 'blue. ', 'red. ',
-             '@' + buffer[random.randint(0, 25)] + ' ']
+
 
 # Functions
 # ----------------------------------------
@@ -53,6 +51,13 @@ def sentece_generator(trainOnItalics, useWordlist):
     for i in range(random.randint(1, 3)):
         for j in range(random.randint(1, 10)):
             if useWordlist:
+                # choose 5 random letters from buffer
+                name = ''.join(random.choice(buffer)
+                               for i in range(random.randint(5, 15)))
+                word_bank = ['placed a P' +
+                             str(random.randint(0, 20000)) +
+                             ' ', 'bet on ', 'blue. ', 'red. ',
+                             '@' + buffer[random.randint(0, 25)] + ' ']
                 sentence += word_bank[random.randint(0, len(word_bank)-1)]
             else:
                 sentence += random.choice(letters)
@@ -64,10 +69,10 @@ def paste_to_chat(sentence):
     pyperclip.copy(sentence)
     keyboard.press(keyboard._Key.ctrl)
     keyboard.press('v')
-    time.sleep((1/SPEED)*random.randint(1000, 2000)/3000)
+    time.sleep((1/SPEED)*random.randint(1000, 2000)/2000)
     keyboard.release('v')
     keyboard.release(keyboard._Key.ctrl)
-    time.sleep((1/SPEED)*random.randint(1000, 2000)/3000)
+    time.sleep((1/SPEED)*random.randint(1000, 2000)/2000)
     keyboard.press(keyboard._Key.enter)
 
 
