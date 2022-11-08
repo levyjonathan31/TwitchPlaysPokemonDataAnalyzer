@@ -10,7 +10,7 @@ from PIL import Image, ImageGrab
 # Settings
 # ----------------------------------------
 TRAIN_ON_ITALICS = True
-USE_WORDLIST = True
+USE_WORDLIST = False
 NUMBER_OF_ITERATIONS = 25
 SPEED = 0.6
 
@@ -51,8 +51,8 @@ def sentece_generator(trainOnItalics, useWordlist):
     for i in range(random.randint(1, 3)):
         if useWordlist:
             # choose 5 random letters from buffer
-            name = ''.join(random.choice(buffer)
-                           for i in range(random.randint(5, 12)))
+            name = '@' + ''.join(random.choice(buffer)
+                                 for i in range(random.randint(5, 12)))
             word_bank = ['placed a ',
                          'P' +
                          str(random.randint(0, 20000)) +
