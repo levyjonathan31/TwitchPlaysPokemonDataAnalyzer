@@ -53,7 +53,8 @@ def sentece_generator(trainOnItalics, useWordlist):
             # choose 5 random letters from buffer
             name = ''.join(random.choice(buffer)
                            for i in range(random.randint(5, 12)))
-            word_bank = ['placed a P' +
+            word_bank = ['placed a ',
+                         'P' +
                          str(random.randint(0, 20000)) +
                          ' ', 'bet on ', 'blue. ', 'red. ',
                          '@' + name + ' ']
@@ -72,7 +73,7 @@ def paste_to_chat(sentence):
     time.sleep((1/SPEED)*random.randint(1000, 2000)/3000)
     keyboard.release('v')
     keyboard.release(keyboard._Key.ctrl)
-    time.sleep((1/SPEED)*random.randint(1000, 2000)/3000)
+    time.sleep((1/SPEED)*random.randint(1000, 2000)/5000)
     keyboard.press(keyboard._Key.enter)
 
 
@@ -109,8 +110,10 @@ keyboard = keyboard.Controller()
 for k in range(0, NUMBER_OF_ITERATIONS):
     sentence = sentece_generator(TRAIN_ON_ITALICS, USE_WORDLIST)
     paste_to_chat(sentence)
-    get_image_and_text(sentence)
     time.sleep((1/SPEED)*random.randint(100, 200)/500)
+    get_image_and_text(sentence)
+
+
 print("Training data generated!")
 end_time = time.time()
 time_lapsed = end_time - start_time
