@@ -52,7 +52,7 @@ def sentece_generator(trainOnItalics, useWordlist):
         if useWordlist:
             # choose 5 random letters from buffer
             name = ''.join(random.choice(buffer)
-                           for i in range(random.randint(5, 15)))
+                           for i in range(random.randint(5, 12)))
             word_bank = ['placed a P' +
                          str(random.randint(0, 20000)) +
                          ' ', 'bet on ', 'blue. ', 'red. ',
