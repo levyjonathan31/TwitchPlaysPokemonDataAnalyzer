@@ -1,7 +1,7 @@
-from PIL import Image
+from PIL import Image, ImageGrab
 from pytesseract import pytesseract
-from PIL import ImageGrab
 from pytesseract import image_to_string
+import numpy as np
 import re
 import time
 import cv2
@@ -29,13 +29,11 @@ def find_nth(string, substring, n):
         return string.find(substring, find_nth(string, substring, n - 1) + 1)
 
 
-def get_text(path_to_image):
-    # Make image larger
-    img = cv2.imread(path_to_image)
+def get_text(img):
 
     # Extract text from image
     text = image_to_string(img,
-                           config='-c tessedit_char_whitelist=!01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@" ", --psm 6 --oem 3')
+                           lang='tpp_roo')
     # Remove end of line characters
     text = text.replace('\n', ' ')
 
@@ -84,8 +82,15 @@ while True:
     ss_region = (2000, 450, 2550, 850)
     ss_img = ImageGrab.grab(ss_region)
     ss_img.save("chat.png")
+    ss_img = cv2.imread("chat.png")
+    # only show black
+    ss_img = cv2.inRange(ss_img, (0, 0, 0), (20, 20, 20))
+    # invert black and white
+    ss_img = cv2.bitwise_not(ss_img)
+    cv2.imwrite("chat.png", ss_img)
+    # save img
     time.sleep(0.2)
-    text = get_text("chat.png")
+    text = get_text(ss_img)
     get_bets(text)
     print(list_of_bets_blue)
     print(list_of_bets_red)
