@@ -1,6 +1,7 @@
 from PIL import Image, ImageGrab
 from pytesseract import pytesseract
 from pytesseract import image_to_string
+import os
 import numpy as np
 import re
 import time
@@ -29,17 +30,22 @@ def find_nth(string, substring, n):
         return string.find(substring, find_nth(string, substring, n - 1) + 1)
 
 
-def get_text(img):
+def get_text(img_path, num_of_lines):
+    combined_text = ""
+    for img in os.listdir(img_path):
+        filePath = os.path.join(img_path, img)
+        img = Image.open(filePath)
+        # Extract text from image
+        text = image_to_string(img,
+                               lang='eng_best_tpp')
+        # Remove end of line characters
+        text = text.replace('\n', ' ')
 
-    # Extract text from image
-    text = image_to_string(img,
-                           lang='tpp_roo')
-    # Remove end of line characters
-    text = text.replace('\n', ' ')
+        # Remove all commas (from numbers)
+        text = text.replace(',', '')
 
-    # Remove all commas (from numbers)
-    text = text.replace(',', '')
-    return text
+        combined_text += text
+    return combined_text
 
 
 def get_bets(text):
@@ -74,23 +80,32 @@ def determine_bet(list_of_bets_red, list_of_bets_blue):
         return "blue " + str(ratio)
     else:
         return "hold " + str(ratio)
+
+
+def get_images(num):
+    start = 750
+    spacing = 28
+    for i in range(num):
+        ss_img = ImageGrab.grab(bbox=(start, 0, start + 28, 28))
+        ss_img.save("TestData/Line" + str(i) + ".png")
+        ss_img = cv2.imread("TestData/Line" + str(i) + ".png")
+        ss_img = cv2.inRange(ss_img, (0, 0, 0), (28, 28, 28))
+        ss_img = cv2.bitwise_not(ss_img)
+        start += spacing
+        cv2.imwrite("TestData/Line" + str(i) + ".png", ss_img)
+
 # MAIN
 # ----------------------------------------
 
 
 while True:
-    ss_region = (2000, 450, 2550, 850)
-    ss_img = ImageGrab.grab(ss_region)
-    ss_img.save("chat.png")
-    ss_img = cv2.imread("chat.png")
-    # only show black
-    ss_img = cv2.inRange(ss_img, (0, 0, 0), (20, 20, 20))
-    # invert black and white
-    ss_img = cv2.bitwise_not(ss_img)
-    cv2.imwrite("chat.png", ss_img)
+
     # save img
     time.sleep(0.2)
-    text = get_text(ss_img)
+    num_of_lines = 4
+    img_path = "TestData"
+    get_images(num_of_lines)
+    text = get_text(img_path, num_of_lines)
     get_bets(text)
     print(list_of_bets_blue)
     print(list_of_bets_red)
