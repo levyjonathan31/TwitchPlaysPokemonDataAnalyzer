@@ -30,14 +30,13 @@ def find_nth(string, substring, n):
 
 
 def get_text():
-    pyautogui.moveTo(1850, 350)
+    pyautogui.moveTo(1580, 350)
     pyautogui.mouseDown(button='left')
-    pyautogui.moveTo(1850, 800)
+    pyautogui.moveTo(1580, 900)
     # press crtl + c
     pyautogui.hotkey('ctrl', 'c')
     # get text from clipboard with pyperclip
     text = pyperclip.paste()
-
     return text
 
 def get_bets(text):
@@ -66,12 +65,21 @@ def determine_bet(list_of_bets_red, list_of_bets_blue):
     # get ratio of red to blue bets
     ratio = sum_bets(list_of_bets_red) / sum_bets(list_of_bets_blue)
     team = ""
-    if ratio > 1.5:
-        return "red " + str(ratio)
-    elif ratio < 0.5:
-        return "blue " + str(ratio)
+    if ratio > 1.25:
+        print("red " + str(ratio))
+        make_bet(ratio, "red")
+    elif ratio < 0.75:
+        print("blue " + str(ratio))
+        make_bet(ratio, "blue")
     else:
-        return "hold " + str(ratio)
+        print("hold " + str(ratio))
+def make_bet(ratio, team):
+    pyautogui.moveTo(1670, 900)
+    pyautogui.mouseDown(button='left')
+    pyautogui.write("!bet 10% " + team)
+    pyautogui.press('Enter')
+
+
 
 # MAIN
 # ----------------------------------------
@@ -86,7 +94,7 @@ def main():
         with open("output.txt", "w", encoding="utf-8") as f:
             f.write(text)
         if text.find("The match starts in 5 seconds") != -1:
+            determine_bet(list_of_bets_red, list_of_bets_blue)
             break
         time.sleep(1)
-    print(determine_bet(list_of_bets_red, list_of_bets_blue))
 main()
