@@ -1,4 +1,5 @@
 import os
+from random import random
 import pyperclip
 import pyautogui
 import numpy as np
@@ -37,6 +38,9 @@ def get_text():
     pyautogui.hotkey('ctrl', 'c')
     # get text from clipboard with pyperclip
     text = pyperclip.paste()
+    time.sleep(0.1)
+    pyautogui.click(button='left')
+    pyautogui.click(button='left')
     return text
 
 def get_bets(text):
@@ -70,13 +74,17 @@ def determine_bet(list_of_bets_red, list_of_bets_blue):
         make_bet(ratio, "red")
     elif ratio < 0.75:
         print("blue " + str(ratio))
+        ratio = 1/ratio
         make_bet(ratio, "blue")
     else:
         print("hold " + str(ratio))
 def make_bet(ratio, team):
     pyautogui.moveTo(1670, 900)
     pyautogui.mouseDown(button='left')
-    pyautogui.write("!bet 10% " + team)
+    bet = round(10*ratio, 0)
+    if (bet > 25):
+        bet = 25
+    pyautogui.write("!bet " + str(bet) + "% " + team)
     pyautogui.press('Enter')
 
 
@@ -93,8 +101,9 @@ def main():
         print("Sum of red bets: ", sum_bets(list_of_bets_red))
         with open("output.txt", "w", encoding="utf-8") as f:
             f.write(text)
-        if text.find("The match starts in 5 seconds") != -1:
+        if text.find("The match starts in 10 seconds") != -1:
+            time.sleep(2+(3*random()))
             determine_bet(list_of_bets_red, list_of_bets_blue)
             break
-        time.sleep(1)
+        time.sleep(0.5)
 main()
