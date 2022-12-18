@@ -5,19 +5,8 @@ import pyautogui
 import numpy as np
 import re
 import time
-import cv2
-# SETUP
-# # ----------------------------------------
-# # Define path to tessaract.exe
-# path_to_tesseract = r'D:\Program Files\Tesseract-OCR\tesseract.exe'
+import keyboard
 
-# # Point tessaract_cmd to tessaract.exe
-# pytesseract.tesseract_cmd = path_to_tesseract
-
-# DATA ANALYSIS
-# ----------------------------------------
-list_of_bets_red = {}
-list_of_bets_blue = {}
 
 # FUNCTIONS
 # ----------------------------------------
@@ -33,7 +22,7 @@ def find_nth(string, substring, n):
 def get_text():
     pyautogui.moveTo(1580, 350)
     pyautogui.mouseDown(button='left')
-    pyautogui.moveTo(1580, 900)
+    pyautogui.moveTo(1580, 950)
     # press crtl + c
     pyautogui.hotkey('ctrl', 'c')
     # get text from clipboard with pyperclip
@@ -43,7 +32,7 @@ def get_text():
     pyautogui.click(button='left')
     return text
 
-def get_bets(text):
+def get_bets(text, list_red, list_blue):
 
     match = re.findall(
         r'[@][A-Za-z0-9_]+ \bplaced a \b[P][0-9,]+ \bbet on\b (?:red|blue)', text)
@@ -53,9 +42,9 @@ def get_bets(text):
         val = i[i.find('placed a P') + 10: i.find(' bet on')]
         val = re.sub(",","", val)
         if 'red' in i:
-            list_of_bets_red[name] = int(val)
+            list_red[name] = int(val)
         else:
-            list_of_bets_blue[name] = int(val)
+            list_blue[name] = int(val)
 
 
 def sum_bets(list_of_bets):
@@ -66,44 +55,61 @@ def sum_bets(list_of_bets):
 
 
 def determine_bet(list_of_bets_red, list_of_bets_blue):
-    # get ratio of red to blue bets
+    # get ratio of red to blue 
+    if sum_bets(list_of_bets_blue) == 0:
+        return
     ratio = sum_bets(list_of_bets_red) / sum_bets(list_of_bets_blue)
     team = ""
-    if ratio > 1.25:
+    if ratio > 1.11:
         print("red " + str(ratio))
         make_bet(ratio, "red")
-    elif ratio < 0.75:
+    elif ratio < 0.9:
         print("blue " + str(ratio))
         ratio = 1/ratio
         make_bet(ratio, "blue")
     else:
         print("hold " + str(ratio))
 def make_bet(ratio, team):
-    pyautogui.moveTo(1670, 900)
+    pyautogui.moveTo(1670, 950)
     pyautogui.mouseDown(button='left')
-    bet = round(10*ratio, 0)
-    if (bet > 25):
-        bet = 25
+    bet = round(10*ratio)
+    if (bet > 50):
+        bet = 50
     pyautogui.write("!bet " + str(bet) + "% " + team)
     pyautogui.press('Enter')
 
 
-
+def wait_for_match():
+    while True:
+        if keyboard.is_pressed('0'):
+            return True
+        text = get_text()
+        time.sleep(0.5)
+        if text.find("A new match is about to begin!") != -1:
+            print("Match started!")
+            return False
 # MAIN
 # ----------------------------------------
 def main():
-    while True:
+    list_of_bets_red = {}
+    list_of_bets_blue = {}
+    kill = False
+    while not kill:
+        if keyboard.is_pressed('0'):
+            kill = True
+            break
         text = get_text()
-        get_bets(text)
-        print(list_of_bets_blue)
-        print(list_of_bets_red)
+        get_bets(text, list_of_bets_red, list_of_bets_blue)
         print("Sum of blue bets: ", sum_bets(list_of_bets_blue))
         print("Sum of red bets: ", sum_bets(list_of_bets_red))
         with open("output.txt", "w", encoding="utf-8") as f:
             f.write(text)
-        if text.find("The match starts in 10 seconds") != -1:
-            time.sleep(2+(3*random()))
+        if text.find("The match starts in 5 seconds") != -1:
+            time.sleep((3*random()))
             determine_bet(list_of_bets_red, list_of_bets_blue)
-            break
+            list_of_bets_red = {}
+            list_of_bets_blue = {}
+            kill = wait_for_match()
         time.sleep(0.5)
+   
 main()
