@@ -55,10 +55,12 @@ def sum_bets(list_of_bets):
 
 
 def determine_bet(list_of_bets_red, list_of_bets_blue):
-    # get ratio of red to blue 
+    # get ratio of red to blue bets
     if sum_bets(list_of_bets_blue) == 0:
         return
     ratio = sum_bets(list_of_bets_red) / sum_bets(list_of_bets_blue)
+    # accounts for number of people betting and modifies ratio.
+    ratio = ratio * len(list_of_bets_red) / len(list_of_bets_blue)
     team = ""
     if ratio > 1.11:
         print("red " + str(ratio))
